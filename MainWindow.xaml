@@ -1,0 +1,255 @@
+<Window x:Class="ScreenRecorder.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:shell="clr-namespace:System.Windows.Shell;assembly=PresentationFramework"
+        xmlns:core="clr-namespace:ScreenRecorder.Core"
+        Title="傻子录屏" Height="640" Width="1040" MinHeight="460" MinWidth="920"
+        WindowStartupLocation="CenterScreen"
+        WindowStyle="None" ResizeMode="CanResize" Background="{StaticResource Bg}">
+
+    <shell:WindowChrome.WindowChrome>
+        <shell:WindowChrome CaptionHeight="0" ResizeBorderThickness="6" GlassFrameThickness="0" CornerRadius="0" UseAeroCaptionButtons="False"/>
+    </shell:WindowChrome.WindowChrome>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="46"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <Border Grid.Row="0" Background="{StaticResource TitleBg}" MouseLeftButtonDown="TitleBar_MouseLeftButtonDown">
+            <Grid>
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="16,0,0,0">
+                    <Ellipse Width="12" Height="12" Fill="{StaticResource Rec}" VerticalAlignment="Center"/>
+                    <TextBlock Text="傻子录屏" FontSize="13" FontWeight="SemiBold" Margin="9,0,0,0" VerticalAlignment="Center"/>
+                    <TextBlock Text="NOIR REC" Foreground="{StaticResource Muted}" FontSize="10.5" Margin="10,1,0,0" VerticalAlignment="Center"/>
+                </StackPanel>
+
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,10,0">
+                    <Button x:Name="FloatButton" Style="{StaticResource GhostButton}" Padding="12,5" Click="FloatButton_Click" Content="浮窗" Margin="0,0,8,0" shell:WindowChrome.IsHitTestVisibleInChrome="True"/>
+                    <Button Style="{StaticResource IconButton}" Width="40" Height="34" Click="Minimize_Click" shell:WindowChrome.IsHitTestVisibleInChrome="True" ToolTip="最小化">
+                        <Path Data="{StaticResource IcoMinimize}" Stroke="{StaticResource SubText}" StrokeThickness="1.3"/>
+                    </Button>
+                    <Button Style="{StaticResource IconButton}" Width="40" Height="34" Click="Maximize_Click" shell:WindowChrome.IsHitTestVisibleInChrome="True" ToolTip="最大化">
+                        <Path Data="{StaticResource IcoMaximize}" Stroke="{StaticResource SubText}" StrokeThickness="1.3"/>
+                    </Button>
+                    <Button Style="{StaticResource IconButton}" Width="40" Height="34" Click="Close_Click" shell:WindowChrome.IsHitTestVisibleInChrome="True" ToolTip="关闭">
+                        <Path Data="{StaticResource IcoClose}" Stroke="{StaticResource SubText}" StrokeThickness="1.3"/>
+                    </Button>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="64"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <Border Grid.Column="0" Background="{StaticResource TitleBg}" BorderBrush="{StaticResource BorderSoft}" BorderThickness="0,0,1,0">
+                <StackPanel VerticalAlignment="Top" Margin="0,18,0,0">
+                    <Grid Width="22" Height="22" HorizontalAlignment="Center" Margin="0,0,0,26">
+                        <Ellipse Stroke="{StaticResource Rec}" StrokeThickness="1.6"/>
+                        <Ellipse Width="8" Height="8" Fill="{StaticResource Rec}"/>
+                    </Grid>
+                    <Button Style="{StaticResource IconButton}" Width="42" Height="42" HorizontalAlignment="Center" Margin="0,0,0,8" ToolTip="打开录制目录" Click="OpenFolder_Click">
+                        <Path Data="{StaticResource IcoFolder}" Stroke="{StaticResource SubText}" StrokeThickness="1.3"/>
+                    </Button>
+                    <Button Style="{StaticResource IconButton}" Width="42" Height="42" HorizontalAlignment="Center" ToolTip="关于" Click="About_Click">
+                        <Border Width="17" Height="17" CornerRadius="9" BorderBrush="{StaticResource SubText}" BorderThickness="1.3">
+                            <TextBlock Text="i" FontSize="10.5" FontWeight="Bold" Foreground="{StaticResource SubText}" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,-1,0,0"/>
+                        </Border>
+                    </Button>
+                </StackPanel>
+            </Border>
+
+            <ScrollViewer Grid.Column="1" Margin="22,18,22,20" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                <StackPanel Margin="0,0,4,0">
+
+                    <StackPanel Grid.Row="0" Margin="2,0,0,16">
+                    <TextBlock Text="屏幕录制" FontSize="21" FontWeight="Bold"/>
+                    <TextBlock Style="{StaticResource SubTextStyle}" Text="选择范围与音源，一键开始高清录制" Margin="0,4,0,0"/>
+                </StackPanel>
+
+                <Border Grid.Row="1" Style="{StaticResource Card}" Margin="0,0,0,14">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Grid x:Name="RecordBtnGrid" Width="150" Height="150" Cursor="Hand" MouseLeftButtonUp="RecordBtn_MouseLeftButtonUp">
+                            <Ellipse x:Name="RecRing" Stroke="#2E2E2E" StrokeThickness="8"/>
+                            <Ellipse x:Name="RecCore" Width="104" Height="104" Fill="{StaticResource Rec}">
+                                <Ellipse.Effect>
+                                    <DropShadowEffect Color="#F04747" BlurRadius="34" ShadowDepth="0" Opacity="0.45"/>
+                                </Ellipse.Effect>
+                            </Ellipse>
+                            <Rectangle x:Name="RecStop" Width="44" Height="44" RadiusX="7" RadiusY="7" Fill="White" Visibility="Collapsed"/>
+                        </Grid>
+
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="26,0,6,0">
+                            <TextBlock x:Name="TimerText" Text="00:00:00" FontFamily="Consolas, Cascadia Mono" FontSize="42" FontWeight="Light" Foreground="{StaticResource Text}"/>
+                            <StackPanel Orientation="Horizontal" Margin="0,6,0,0">
+                                <Ellipse x:Name="StatusDot" Width="9" Height="9" Fill="{StaticResource Muted}" VerticalAlignment="Center"/>
+                                <TextBlock x:Name="StatusText" Text="就绪" Margin="8,0,0,0" Foreground="{StaticResource SubText}" VerticalAlignment="Center"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" Margin="0,16,0,0">
+                                <Button x:Name="PauseButton" Style="{StaticResource GhostButton}" Content="暂停" Click="Pause_Click" IsEnabled="False" Margin="0,0,8,0"/>
+                                <Button x:Name="StopButton" Style="{StaticResource GhostButton}" Content="停止" Click="Stop_Click" IsEnabled="False"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </Grid>
+                </Border>
+
+                <Grid Grid.Row="2" Margin="0,0,0,14">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Border Grid.Column="0" Style="{StaticResource Card}" Margin="0,0,7,0">
+                        <StackPanel>
+                            <TextBlock Style="{StaticResource SectionTitle}" Text="录制范围"/>
+                            <Border Background="{StaticResource Bg}" CornerRadius="8" Padding="4">
+                                <UniformGrid Columns="3">
+                                    <ToggleButton x:Name="SegFull" Style="{StaticResource Segment}" Content="整个屏幕" IsChecked="True" Click="Seg_Click" Tag="Full"/>
+                                    <ToggleButton x:Name="SegWindow" Style="{StaticResource Segment}" Content="指定窗口" Click="Seg_Click" Tag="Window" Margin="4,0,0,0"/>
+                                    <ToggleButton x:Name="SegRegion" Style="{StaticResource Segment}" Content="自定义区域" Click="Seg_Click" Tag="Region" Margin="4,0,0,0"/>
+                                </UniformGrid>
+                            </Border>
+
+                            <ComboBox x:Name="DisplayCombo" Margin="0,12,0,0" DisplayMemberPath="FriendlyName" SelectionChanged="Display_SelectionChanged"/>
+
+                            <Grid x:Name="WindowPanel" Visibility="Collapsed" Margin="0,12,0,0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <ComboBox x:Name="WindowCombo" DisplayMemberPath="Title"/>
+                                <Button Grid.Column="1" Style="{StaticResource GhostButton}" Content="刷新" Margin="8,0,0,0" Click="RefreshWindows_Click" ToolTip="刷新窗口"/>
+                            </Grid>
+
+                            <Grid x:Name="RegionPanel" Visibility="Collapsed" Margin="0,12,0,0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock x:Name="RegionText" Text="尚未选择区域" VerticalAlignment="Center" Foreground="{StaticResource SubText}"/>
+                                <Button Grid.Column="1" Style="{StaticResource GhostButton}" Content="框选区域" Click="Region_Click"/>
+                            </Grid>
+                        </StackPanel>
+                    </Border>
+
+                    <Border Grid.Column="1" Style="{StaticResource Card}" Margin="7,0,0,0">
+                        <StackPanel>
+                            <TextBlock Style="{StaticResource SectionTitle}" Text="音频"/>
+                            <Grid Margin="0,2,0,6">
+                                <TextBlock Text="系统声音" VerticalAlignment="Center"/>
+                                <ToggleButton x:Name="SysToggle" Style="{StaticResource Switch}" HorizontalAlignment="Right" IsChecked="True"/>
+                            </Grid>
+                            <Grid Margin="0,6,0,10">
+                                <TextBlock Text="麦克风" VerticalAlignment="Center"/>
+                                <ToggleButton x:Name="MicToggle" Style="{StaticResource Switch}" HorizontalAlignment="Right" IsChecked="False" Checked="MicToggle_Changed" Unchecked="MicToggle_Changed"/>
+                            </Grid>
+                            <ComboBox x:Name="MicCombo" DisplayMemberPath="FriendlyName" IsEnabled="False"/>
+                        </StackPanel>
+                    </Border>
+                </Grid>
+
+                <Grid Grid.Row="3">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <Border Grid.Row="0" Style="{StaticResource Card}" Margin="0,0,0,14">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Margin="0,0,16,0">
+                                <TextBlock Style="{StaticResource SectionTitle}" Text="输出"/>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBox x:Name="PathBox"/>
+                                    <Button Grid.Column="1" Style="{StaticResource GhostButton}" Content="浏览" Margin="8,0,0,0" Click="Browse_Click"/>
+                                </Grid>
+                            </StackPanel>
+                            <StackPanel Grid.Column="1" Width="150">
+                                <TextBlock Style="{StaticResource SectionTitle}" Text="画质"/>
+                                <ComboBox x:Name="FpsCombo" SelectedIndex="0">
+                                    <ComboBoxItem Content="30 帧 / 流畅"/>
+                                    <ComboBoxItem Content="60 帧 / 顺滑"/>
+                                </ComboBox>
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+
+                    <Border Grid.Row="1" Style="{StaticResource Card}">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <TextBlock Grid.Row="0" Style="{StaticResource SectionTitle}" Text="录制文件"/>
+                            <TextBlock x:Name="EmptyHint" Grid.Row="1" Text="还没有录制文件" Foreground="{StaticResource Muted}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            <ListBox x:Name="FileList" Grid.Row="1" MinHeight="150" Background="Transparent" BorderThickness="0"
+                                     ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                                <ListBox.ItemContainerStyle>
+                                    <Style TargetType="ListBoxItem">
+                                        <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+                                        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                                        <Setter Property="Template">
+                                            <Setter.Value>
+                                                <ControlTemplate TargetType="ListBoxItem">
+                                                    <Border x:Name="Bd" Background="Transparent" CornerRadius="8" Padding="12,10" Margin="0,0,0,6">
+                                                        <ContentPresenter/>
+                                                    </Border>
+                                                    <ControlTemplate.Triggers>
+                                                        <Trigger Property="IsMouseOver" Value="True">
+                                                            <Setter TargetName="Bd" Property="Background" Value="{StaticResource HoverSoft}"/>
+                                                        </Trigger>
+                                                    </ControlTemplate.Triggers>
+                                                </ControlTemplate>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </Style>
+                                </ListBox.ItemContainerStyle>
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate DataType="{x:Type core:RecordingItem}">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+                                            <Border Width="40" Height="40" CornerRadius="8" Background="{StaticResource PanelAlt}">
+                                                <Path Data="{StaticResource IcoPlay}" Fill="{StaticResource Accent}" Width="11" Height="13" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="2,0,0,0"/>
+                                            </Border>
+                                            <StackPanel Grid.Column="1" Margin="12,0,0,0" VerticalAlignment="Center">
+                                                <TextBlock Text="{Binding Name}" FontWeight="SemiBold"/>
+                                                <TextBlock Text="{Binding Meta}" Style="{StaticResource SubTextStyle}" Margin="0,3,0,0"/>
+                                            </StackPanel>
+                                            <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
+                                                <Button Style="{StaticResource GhostButton}" Content="打开" Padding="10,5" Margin="0,0,8,0" Click="PlayItem_Click"/>
+                                                <Button Style="{StaticResource IconButton}" Width="34" Height="30" Click="DeleteItem_Click" ToolTip="删除">
+                                                    <Path Data="{StaticResource IcoTrash}" Stroke="{StaticResource SubText}" StrokeThickness="1.2"/>
+                                                </Button>
+                                            </StackPanel>
+                                        </Grid>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+                        </Grid>
+                    </Border>
+                </Grid>
+                </StackPanel>
+            </ScrollViewer>
+        </Grid>
+    </Grid>
+</Window>

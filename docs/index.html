@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ShaziScreenRecorder</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: #fafafa;
+            color: #333;
+            line-height: 1.6;
+        }
+        nav {
+            background: #fff;
+            border-bottom: 1px solid #e5e5e5;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        nav .logo { font-size: 1.25rem; font-weight: 700; color: #111; text-decoration: none; }
+        nav .logo span { color: #0066cc; }
+        nav .right { display: flex; align-items: center; }
+        nav a { color: #555; text-decoration: none; margin-left: 1.5rem; font-size: 0.9rem; }
+        nav a:hover { color: #0066cc; }
+        .lang-btn {
+            background: #f0f0f0; border: 1px solid #ddd; border-radius: 4px;
+            padding: 0.3rem 0.75rem; font-size: 0.85rem; cursor: pointer;
+            color: #555; margin-left: 1.5rem; transition: all 0.2s;
+        }
+        .lang-btn:hover { border-color: #0066cc; color: #0066cc; }
+        .hero {
+            text-align: center;
+            padding: 6rem 2rem 4rem;
+            background: linear-gradient(180deg, #fff 0%, #f5f7fa 100%);
+        }
+        .hero h1 { font-size: 3rem; font-weight: 700; color: #111; margin-bottom: 1rem; }
+        .hero h1 span { color: #0066cc; }
+        .hero p { font-size: 1.15rem; color: #666; max-width: 640px; margin: 0 auto 2rem; }
+        .hero img {
+            display: block; max-width: 760px; width: 100%; margin: 2rem auto 0;
+            border: 1px solid #e5e5e5; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+        }
+        .btn {
+            display: inline-block; padding: 0.75rem 2rem; border-radius: 6px;
+            text-decoration: none; font-weight: 600; font-size: 0.95rem; transition: all 0.2s;
+        }
+        .btn-primary { background: #0066cc; color: #fff; }
+        .btn-primary:hover { background: #0052a3; }
+        .btn-outline { border: 1px solid #ddd; color: #555; margin-left: 0.75rem; }
+        .btn-outline:hover { border-color: #0066cc; color: #0066cc; }
+        .section { max-width: 900px; margin: 0 auto; padding: 4rem 2rem; }
+        .section h2 { font-size: 1.75rem; font-weight: 700; color: #111; margin-bottom: 1.5rem; }
+        .features {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem;
+        }
+        .feature { background: #fff; border: 1px solid #e5e5e5; border-radius: 8px; padding: 1.5rem; }
+        .feature h3 { font-size: 1rem; font-weight: 600; margin-bottom: 0.5rem; color: #111; }
+        .feature p { font-size: 0.9rem; color: #666; }
+        .cmd-table {
+            width: 100%; border-collapse: collapse; background: #fff;
+            border: 1px solid #e5e5e5; border-radius: 8px; overflow: hidden; margin-top: 1rem;
+        }
+        .cmd-table th, .cmd-table td {
+            padding: 0.75rem 1rem; text-align: left; border-bottom: 1px solid #e5e5e5; font-size: 0.9rem;
+        }
+        .cmd-table th { background: #f8f8f8; font-weight: 600; color: #111; }
+        .cmd-table code {
+            background: #f0f0f0; padding: 0.15rem 0.4rem; border-radius: 3px; font-size: 0.85rem;
+        }
+        .install-steps {
+            background: #fff; border: 1px solid #e5e5e5; border-radius: 8px;
+            padding: 1.5rem 2rem; margin-top: 1rem;
+        }
+        .install-steps li { margin-bottom: 0.5rem; font-size: 0.95rem; color: #444; }
+        .install-steps code {
+            background: #f0f0f0; padding: 0.15rem 0.4rem; border-radius: 3px; font-size: 0.85rem;
+        }
+        footer {
+            text-align: center; padding: 2rem; border-top: 1px solid #e5e5e5; color: #999; font-size: 0.85rem;
+        }
+        footer a { color: #0066cc; text-decoration: none; }
+    </style>
+</head>
+<body>
+    <nav>
+        <a class="logo" href="#">Shazi<span>Recorder</span></a>
+        <div class="right">
+            <a href="#features" data-en="Features" data-zh="功能">Features</a>
+            <a href="#usage" data-en="Usage" data-zh="使用">Usage</a>
+            <a href="#build" data-en="Build" data-zh="构建">Build</a>
+            <a href="">GitHub</a>
+            <button class="lang-btn" onclick="toggleLang()">EN / 中文</button>
+        </div>
+    </nav>
+
+    <div class="hero">
+        <h1>Shazi<span>Recorder</span></h1>
+        <p data-en="A simple, dark Photoshop-style screen recorder for Windows. Full screen, window or region capture with system audio and microphone, plus a topmost floating control bar." data-zh="一个简洁、深色 PS 风格的 Windows 屏幕录制工具。支持整屏、窗口或区域录制，系统声音与麦克风独立开关，带置顶悬浮控制条。">A simple, dark Photoshop-style screen recorder for Windows. Full screen, window or region capture with system audio and microphone, plus a topmost floating control bar.</p>
+        <a href="" class="btn btn-primary" data-en="View on GitHub" data-zh="GitHub 查看">View on GitHub</a>
+        <a href="#usage" class="btn btn-outline" data-en="Get Started" data-zh="快速上手">Get Started</a>
+        <img src="image.png" alt="ShaziScreenRecorder">
+    </div>
+
+    <div class="section" id="features">
+        <h2 data-en="Features" data-zh="功能特性">Features</h2>
+        <div class="features">
+            <div class="feature">
+                <h3 data-en="Three Capture Modes" data-zh="三种录制范围">Three Capture Modes</h3>
+                <p data-en="Full screen, a specific window, or a custom region drawn on screen." data-zh="整个屏幕、指定窗口，或直接在屏幕上框选自定义区域。">Full screen, a specific window, or a custom region drawn on screen.</p>
+            </div>
+            <div class="feature">
+                <h3 data-en="Two Audio Sources" data-zh="双音源">Two Audio Sources</h3>
+                <p data-en="System audio and microphone are independent toggles with device selection." data-zh="系统声音与麦克风可独立开关，并支持选择输入设备。">System audio and microphone are independent toggles with device selection.</p>
+            </div>
+            <div class="feature">
+                <h3 data-en="Floating Bar" data-zh="悬浮控制条">Floating Bar</h3>
+                <p data-en="A topmost capsule to start, stop or pause, with a live timer while the main window hides." data-zh="置顶胶囊浮窗，一键开始、停止、暂停，主界面隐藏时仍可实时计时。">A topmost capsule to start, stop or pause, with a live timer while the main window hides.</p>
+            </div>
+            <div class="feature">
+                <h3 data-en="Dark PS-Style UI" data-zh="深色 PS 风格界面">Dark PS-Style UI</h3>
+                <p data-en="Custom vector icons and control templates, no icon-font dependency." data-zh="自定义矢量图标与控件模板，不依赖任何图标字体。">Custom vector icons and control templates, no icon-font dependency.</p>
+            </div>
+            <div class="feature">
+                <h3 data-en="HD Presets" data-zh="高清参数">HD Presets</h3>
+                <p data-en="30 / 60 FPS with bitrate presets and H.264 hardware encoding." data-zh="30 / 60 帧与码率预设，H.264 硬件编码。">30 / 60 FPS with bitrate presets and H.264 hardware encoding.</p>
+            </div>
+            <div class="feature">
+                <h3 data-en="Standard MP4 Output" data-zh="标准 MP4 输出">Standard MP4 Output</h3>
+                <p data-en="Auto-named files, auto-scanned list with open and delete actions." data-zh="文件自动命名，列表自动扫描目录，支持打开与删除。">Auto-named files, auto-scanned list with open and delete actions.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="section" id="usage">
+        <h2 data-en="Usage" data-zh="使用">Usage</h2>
+        <div class="install-steps">
+            <ol>
+                <li><span data-en="Pick a scope:" data-zh="选择范围：">Pick a scope:</span> <code data-en="full screen / window / region (drag to select)" data-zh="整个屏幕 / 指定窗口 / 框选区域">full screen / window / region</code></li>
+                <li><span data-en="Toggle audio:" data-zh="开关声音：">Toggle audio:</span> <code data-en="system audio or microphone" data-zh="系统声音或麦克风">system audio or microphone</code></li>
+                <li><span data-en="Record:" data-zh="开始录制：">Record:</span> <code data-en="press the big center button, press again to stop" data-zh="点击中央大圆钮，再次点击结束">press the center button</code></li>
+                <li><span data-en="Floating bar:" data-zh="悬浮窗：">Floating bar:</span> <code data-en="「浮窗」 keeps controls on top while hiding the main window" data-zh="「浮窗」可将控制收进置顶悬浮条，隐藏主界面">「浮窗」collapses to topmost bar</code></li>
+                <li><span data-en="Output:" data-zh="输出：">Output:</span> <code data-en="MP4 saved to the selected folder, listed automatically" data-zh="MP4 自动保存到所选目录并列出">MP4 saved to the folder automatically</code></li>
+            </ol>
+        </div>
+    </div>
+
+    <div class="section" id="build">
+        <h2 data-en="Build" data-zh="构建">Build</h2>
+        <div class="install-steps">
+            <ol>
+                <li data-en="Install .NET SDK 10 or later." data-zh="安装 .NET SDK 10 或更高版本。">Install .NET SDK 10 or later.</li>
+                <li data-en="Clone the repository (coming soon):" data-zh="克隆仓库（即将开放）：">Clone the repository:</li>
+                <li><span data-en="Build the release:" data-zh="构建正式版：">Build the release:</span> <code>dotnet build ShaziScreenRecorder.csproj -c Release</code></li>
+                <li><span data-en="Run it:" data-zh="运行：">Run it:</span> <code>bin/x64/Release/net10.0-windows10.0.19041.0/ShaziScreenRecorder.exe</code></li>
+            </ol>
+        </div>
+    </div>
+
+    <footer>
+        <p>ShaziScreenRecorder &copy; 2026 | <a href="">License</a> · Apache-2.0</p>
+    </footer>
+
+    <script>
+        let lang = 'en';
+        function toggleLang() {
+            lang = lang === 'en' ? 'zh' : 'en';
+            document.querySelectorAll('[data-en]').forEach(el => {
+                el.textContent = el.getAttribute('data-' + lang);
+            });
+        }
+    </script>
+</body>
+</html>
